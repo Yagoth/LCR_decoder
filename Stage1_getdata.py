@@ -59,7 +59,7 @@ directions = ["L", "C", "R"]
 
 
 # should really make this some kind of switch case
-for index1 in range(1, length, 1):
+for index1 in range(0, length, 1):
     print("position " + str(index1) + "\n" + cleanedCypherText[index1] + "\n" + cleanedPlainText[index1])
     offset[index1] = ord(cleanedCypherText[index1]) - ord(cleanedPlainText[index1])
     print(str(offset[index1]))
@@ -82,7 +82,7 @@ for index1 in range(1, length, 1):
     offsetLetter[index1] = directions[result]
     print(offsetLetter[index1])
     print(result)
-
+    #index1 = index1 + 1  #this was uncommented before yet it somehow did not iterate by 2 or kill everything becuase range is werid
 
 print(offset)
 print(offsetLetter)

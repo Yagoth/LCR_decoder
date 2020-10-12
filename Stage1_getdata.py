@@ -22,9 +22,25 @@ validCypherChars= re.compile('[A-Z!]')
 cleanedCypherText = validCypherChars.findall(cypherText)
 cleanedPlainText = validCypherChars.findall(plainText)
 
-offset = np.zeros(len(cleanedCypherText), dtype="int8")
-offsetLetter = np.zeros(len(cleanedCypherText), dtype="unicode_")
-trinaryPrecursor= np.zeros(len(cleanedCypherText), dtype="int8")
+# fix real "!" issue
+# find position of real "!" in plain text.  Then remove that index from both cypher and plain?
+validCypherChars = re.compile('[!]')
+
+stringCleanedPlainText = ''.join(cleanedPlainText)
+exclamationPosIterator = validCypherChars.finditer(stringCleanedPlainText)
+for match in exclamationPosIterator:
+    print(match.span())
+
+doubleCleanedPlainText = cleanedPlainText[0:10]
+doubleCleanedPlainText.extend(cleanedPlainText[12:589])
+doubleCleanedPlainText.extend(cleanedPlainText[591:])
+
+doubleCleanedCypherText = cleanedCypherText[0:10]
+doubleCleanedCypherText.extend(cleanedCypherText[12:589])
+doubleCleanedCypherText.extend(cleanedCypherText[591:])
+
+cleanedPlainText = doubleCleanedPlainText
+cleanedCypherText = doubleCleanedCypherText
 
 if len(cleanedCypherText) != len(cleanedPlainText):
     print("error cleaned cypherText length than clean plaintext")
@@ -32,42 +48,47 @@ if len(cleanedCypherText) != len(cleanedPlainText):
     print("plaintext is " + str(cleanedPlainText.__len__()) + " characters long")
 
 
-#should really make this some kind of switch case
-for index1 in range(0, len(cleanedPlainText), 1):
+length = len(cleanedPlainText)-2
+
+offset = np.zeros(length, dtype="int8")
+offsetLetter = np.zeros(length, dtype="unicode_")
+trinaryPrecursor = np.ones(length, dtype="int8")
+
+directions = ["L", "C", "R"]
+
+
+
+# should really make this some kind of switch case
+for index1 in range(1, length, 1):
     print("position " + str(index1) + "\n" + cleanedCypherText[index1] + "\n" + cleanedPlainText[index1])
     offset[index1] = ord(cleanedCypherText[index1]) - ord(cleanedPlainText[index1])
     print(str(offset[index1]))
+    result = 0
     if offset[index1] == -1:
-        print('L')
-        offsetLetter[index1] = 'L'
-        trinaryPrecursor[index1] = 0
+        result = 0
     elif offset[index1] == 0:
-        print('C')
-        offsetLetter[index1] = 'C'
-        trinaryPrecursor[index1] = 1
+        result = 1
     elif offset[index1] == 1:
-        print('R')
-        offsetLetter[index1] = 'R'
-        trinaryPrecursor[index1] = 2
-    elif offset[index1] == ord("!")-ord("A"):
-        print('L!')
-        offsetLetter[index1] = 'L'
-        trinaryPrecursor[index1] = 0
+        result = 2
+    elif offset[index1] == ord("!") - ord("A"):
+        result = 0
     elif offset[index1] == ord("!") - ord("Z"):
-        print('R!')
-        offsetLetter[index1] = 'R'
-        trinaryPrecursor[index1] = 2
+        result = 2
     else:
         print("badshift")
         break
 
-    index1 = index1 + 1
+    trinaryPrecursor[index1] = result
+    offsetLetter[index1] = directions[result]
+    print(offsetLetter[index1])
+    print(result)
+
 
 print(offset)
 print(offsetLetter)
 print(trinaryPrecursor)
 
-np.savetxt("offset.csv", offset, delimiter=",",fmt="%d")
+np.savetxt("offset.csv", offset, delimiter=",", fmt="%d")
 np.savetxt("offsetLetter.csv", offsetLetter, delimiter=",", fmt="%s")
 np.savetxt("trinaryPrecursor.csv", trinaryPrecursor, delimiter=",", fmt="%d")
 

@@ -6,15 +6,21 @@ listTrinaryPrecursor = trinaryPrecursor.tolist()
 # makeItSuckLess.pprint(trinaryPrecursor)
 
 listTrinaryPrecursor = [int(num) for num in listTrinaryPrecursor]
+# ignore endpoints per instructions??
+listTrinaryPrecursor = listTrinaryPrecursor[1:(len(listTrinaryPrecursor)-1)]
 
-lookup = [chr(code) for code in range(ord('A'), ord('Z'))]
-lookup.append('!')
+
+lookup = ["!"]
+lookup.extend([chr(code) for code in range(ord('A'), ord('Z'))])
+print(lookup)
+# lookup = [chr(code) for code in range(ord('A'), ord('Z'))]
+# lookup.append('!')
 
 trinarySnips = [listTrinaryPrecursor[i:i + 3] for i in range(0, len(listTrinaryPrecursor), 3)]
 
 triLetter = np.zeros(len(trinarySnips), dtype="unicode_")
 
-for index in range(0, len(trinarySnips)-1):
+for index in range(0, len(trinarySnips)):
     print(trinarySnips[index])
     triValue = trinarySnips[index][2]*1 + trinarySnips[index][1]*3 + trinarySnips[index][0]*9
     print(triValue)
@@ -22,4 +28,4 @@ for index in range(0, len(trinarySnips)-1):
     # triLetter[index] = (chr(ord('A') - 1 + triValue))
     print(triLetter[index])
 
-print(triLetter)
+print(''.join(triLetter))
